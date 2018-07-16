@@ -1,0 +1,195 @@
+<% include header %>
+
+	<div id="admin">
+		<div class="top">
+			<ul>
+				<li class="active"> <span>所有用户</span> </li>
+				<li> <span class="zz">所有文章</span> </li>
+				<li> <span>所有回复</span> </li>
+			</ul>
+		</div>
+		<div class="floor">
+			<div class="floor-main">
+				<section class="user all active">
+					<table border="" cellspacing="" cellpadding="">
+							<% if( data.user.length > 0 ){ %>
+						<tr>
+							<th> 用户名 </th>
+							<th> 头衔 </th>
+							<th> 注册时间 </th>
+							<th> 积分 </th>
+							<th> 状态 </th>
+							<th> 操作 </th>
+						</tr>
+						<% for( var i = 0 ; i < data.user.length ; i++ ){ %>
+							<tr>
+								<td style="color: red;"> <%= data.user[i].name %> </td>
+								<td> <%= data.user[i].use_style.name %> </td>
+								<td> <%= new Date(data.user[i].user_time).getFullYear() %>年
+									<%= new Date(data.user[i].user_time).getMonth() + 1 %>月
+									<%= new Date(data.user[i].user_time).getDate() %>日
+									
+								</td>
+								<td> <%= data.user[i].jifen %>  </td>
+								<td> 
+									正常
+								</td>
+								<td> <span class="de" num="<%= data.user[i]._id %>"> 删除该用户 </span>  </td>
+							</tr>
+						<% } %>
+						<% }else{ %>
+							<h2> 暂无用户</h2>
+						<% } %>
+					</table>
+
+				</section>
+				<section class="article all">
+						<table border="" cellspacing="" cellpadding="">
+							<% if( data.article.length > 0 ){ %>
+						<tr>
+							<th> 文章标题 </th>
+							<th> 文章作者 </th>
+							<th> 创建时间 </th>
+							<th> 回复量 </th>
+							<th> 状态 </th>
+							<th> 操作 </th>
+						</tr>
+						<% for( var i = 0 ; i < data.article.length ; i++ ){ %>
+								<tr>
+									<td> <%= data.article[i].title %> </td>
+									<td> <% if(data.article[i].author ){ %>
+											<%= data.article[i].author.name %>
+										<% }else{ %>
+											该用户已经被删除-系统消息
+											<% } %>
+									</td>
+									<td> <%= new Date(data.article[i].times).getFullYear() %>年
+									<%= new Date(data.article[i].times).getMonth() + 1 %>月
+									<%= new Date(data.article[i].times).getDate() %>日
+									</td>
+									<td> <%= data.article[i].reply_num %> </td>
+									<td>
+										<% if( data.article[i].isDe ){ %>
+											被删除
+										<% }else{ %>
+											正常
+										<% } %>
+									</td>
+									<td> 
+										<span class="dearticle" num="<%= data.article[i]._id %>"> 完全删除 </span>
+									</td>
+								</tr>
+						<% } %>
+						<% }else{ %>
+							<h2> 暂无文章 </h2>
+						<% } %>
+					</table>
+				</section>
+				<section class="reply all">
+					<table border="" cellspacing="" cellpadding="">
+						<% if( data.reply.length > 0 ){ %>
+						<tr>
+							<th> 回复文章 </th>
+							<th> 回复作者 </th>
+							<th> 创建时间 </th>
+							<th> 该条回复下的回复量 </th>
+							<th> 状态 </th>
+							<th> 操作 </th>
+						</tr>
+						<% for( var i = 0 ; i < data.reply.length ; i++ ){ %>
+								<tr>
+									<td> 
+										<% if( data.reply[i].article_id ){ %>
+											<%= data.reply[i].article_id.title %> 
+										<%	}else{ %>
+											该文章已经被删除
+										<% } %>
+									</td>
+									<td> <%= data.reply[i].author_id.name %> </td>
+									<td> <%= new Date(data.reply[i].time).getFullYear() %>年
+									<%= new Date(data.reply[i].time).getMonth() + 1 %>月
+									<%= new Date(data.reply[i].time).getDate() %>日 </td>
+									<td> 
+										<% if( data.reply[i].comment_num == 0 || data.reply[i].comment_num ){ %>
+											<%= data.reply[i].comment_num %>
+											<% }else{ %>
+												该回复是最底层回复
+											<% } %>
+									</td>
+									<td>
+										<% if( data.reply[i].isDe ){ %>
+											被删除
+										<% }else{ %>
+											正常
+										<% } %>
+									</td>
+									<td>
+										<span class="dereply" num="<%= data.reply[i]._id %>"> 完全删除 </span>
+									</td>
+								</tr>
+						<% } %>
+						<% }else{  %>
+							<h2> 暂无回复 </h2>
+						<% } %>
+					</table>
+				</section>
+			</div>
+		</div>
+	</div>
+
+<% include footer %>
+
+<script>
+	//遍历回复 用用 文章
+	$('.top ul li').each(function(ins,val){
+		$(this).click(function(){
+			console.log(this)
+			$(this).addClass('active').siblings().removeClass('active')
+			$('.floor-main > section').eq($(this).index()).addClass('active').siblings().removeClass('active')
+		})
+	})
+	//删除用户
+	$('.user td .de').click(function(){
+		var id = {
+			id:$(this).attr('num')
+		}
+		$.post('/de/user',id).then((data) => {
+			alert(data)
+			if( data == '删除用户成功' ){ 
+				window.location.reload();
+			}
+		}).catch((err) => {
+			console.log(err)
+		})
+		
+	})
+	//删除文章
+	$('.article td .dearticle').click(function(){
+		console.log('44')
+		var id = {
+			id:$(this).attr('num')
+		}
+		$.post('/de/article',id).then((data) => {
+			alert(data)
+			if( data == '删除文章成功' ){ 
+				window.location.reload();
+			}
+		}).catch((err) => {
+			console.log(err)
+		})
+	})
+	//删除回复
+	$('.reply td .dereply').click(function(){
+		var id = {
+			id:$(this).attr('num')
+		}
+		$.post('/de/reply',id).then((data) => {
+			alert(data)
+			if( data == '删除回复成功' ){ 
+				window.location.reload();
+			}
+		}).catch((err) => {
+			console.log(err)
+		})
+	})
+</script>

@@ -1,0 +1,46 @@
+<% include header %>
+
+<div ng-app="myZhuce" style="text-align:center;">
+	<form action="" ng-submit="zhuce($event)" name="myForm" ng-controller="myCtrl" method="post">
+		<span> 请输入用户名 </span><br />
+		<input type="text" name="name" id="name" ng-model="data.name" required="" ng-pattern="/[a-zA-Z0-9]{2,10}$/"/><br />
+		<!--<span ng-show="myForm.name.$dirty && myForm.name.$invalid">请输出正确的用户名</span>-->
+		<span> 请输入密码 </span><br />
+		<input type="password" name="pass1" id="pass1" ng-model="data.pas1" required=""/><br />
+		<span> 请再次输入密码 </span><br />
+		<input type="password" name="pass2" id="pass2" ng-model="data.pas2" required=""/><br />
+		<input type="submit" value="提交"/>
+	</form>
+	
+</div>
+
+<% include footer %>
+<script>
+	var myApp = angular.module('myZhuce',[]);
+	myApp.controller('myCtrl',function($scope,$http){
+		$scope.data = {}
+		$scope.zhuce = (ev) => {
+			ev.preventDefault()
+			if( $scope.data.pas1 !== $scope.data.pas2 ){
+				alert('两次输入的密码不一致,请重新输入')
+			}else{
+				$http({
+					url:'/admin/zhuce/admin/zhuce/admin/zhuce/admin/zhuce',
+					method:'POST',
+					data:$.param($scope.data),   //将数据转换成字符串序列化对
+					headers:{
+						'Content-Type':'application/x-www-form-urlencoded'
+					}
+				}).then((data) => {
+					alert(data.data)
+					if(data.data == '注册成功,请登陆吧!'){
+						console.log('可以跳转了!')
+						location.href = '/denglu'
+					}
+				}).catch((err) => {
+					console.log(err)
+				})
+			}
+		}
+	})
+</script>

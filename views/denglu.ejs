@@ -1,0 +1,41 @@
+<% include header %>
+
+<div ng-app="myDenglu" style="text-align:center;" id="denglu">
+	<div>
+		<form action="" ng-submit="denglu($event)" name="myForm" ng-controller="myCtrl" method="post">
+			<span> 请输入管理员账号 </span>
+			<input type="text" name="name" id="name" ng-model="data.name" required=""/><br />
+			<span> 请输入管理员密码 </span>
+			<input type="password" name="pas" id="pas" ng-model="data.pas" required=""/><br />
+			<button type="submit" > 登录 </button>
+		</form>
+	</div>
+</div>
+
+<% include footer %>
+<script>
+	var myApp = angular.module('myDenglu',[]);
+	myApp.controller('myCtrl',function($scope,$http){
+		$scope.data = {}
+		$scope.denglu = (ev) => {
+			ev.preventDefault()
+			$http({
+				url:'/admin/denglu/admin/denglu/admin/denglu/admin/denglu',
+				method:'POST',
+				data:$.param($scope.data),   //将数据转换成字符串序列化对
+				headers:{
+					'Content-Type':'application/x-www-form-urlencoded'
+				}
+			}).then((data) => {
+				alert(data.data)
+				if( data.data == '登录成功,即将进行跳转' ){
+					location.href = '/index'
+					
+				}
+				
+			}).catch((err) => {
+				console.log(err)
+			})
+		}
+	})
+</script>
